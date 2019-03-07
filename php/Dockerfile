@@ -19,12 +19,17 @@ RUN apt-get update && apt-get install --no-install-recommends -y postgresql-clie
 
 # install php middleware
 RUN apt-get update && apt-get install --no-install-recommends -y \
-        git curl unzip vim wget sudo libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libmcrypt-dev libxml2-dev libpq-dev libpq5 postgresql-client mysql-client ssl-cert libicu-dev \
+        git curl unzip vim wget sudo libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libmcrypt-dev libxml2-dev libpq-dev libpq5 postgresql-client mysql-client ssl-cert libicu-dev libmemcached-dev \
         && docker-php-ext-configure \
         gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
         && docker-php-ext-install -j$(nproc) \
         mbstring zip gd xml pdo pdo_pgsql pdo_mysql soap intl opcache \
         && rm -r /var/lib/apt/lists/*
+
+# install php pecl extentions
+RUN pecl channel-update pecl.php.net \
+       && pecl install memcached \
+       && docker-php-ext-enable memcached
 
 # copy from custom php.ini file
 COPY php.ini /usr/local/etc/php/
@@ -43,6 +48,12 @@ RUN mkdir -p /var/www/adminer \
   && wget https://raw.githubusercontent.com/vrana/adminer/master/designs/nicu/adminer.css \
   && mv adminer-4.6.3.php index.php
 
+# install memached monitor
+RUN mkdir -p /var/www/memcached \
+  && wget https://raw.githubusercontent.com/DBezemer/memcachephp/master/memcache.php \
+  && sed -e 's/localhost/memcached_srv/g' ./memcache.php > ./index.php \
+  && mv index.php /var/www/memcached
+
 # install composer and settings
 RUN curl -sS https://getcomposer.org/installer | php -- \
         --filename=composer \
@@ -52,5 +63,9 @@ RUN chown -R www-data: /var/www
 USER www-data
 RUN composer global require --optimize-autoloader \
         "hirak/prestissimo"
+# install laravel installer
+RUN composer global require --optimize-autoloader \
+         "laravel/installer"
+
 USER root
 

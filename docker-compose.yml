@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 volumes:
   pgsql_db:
     driver: local
@@ -34,6 +34,16 @@ services:
     depends_on:
       - pgsql_db
       - mysql_db
+      - memcached
     links:
       - pgsql_db:pgsql_db
       - mysql_db:mysql_db
+      - mail:mail_srv
+      - memcached:memcached_srv
+  mail:
+# Mail Cacherはポート1025でつなぎに行く
+    image: pocari/mailcatcher
+    ports:
+      - "1080:1080"
+  memcached:
+    image: memcached:1.5

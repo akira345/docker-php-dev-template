@@ -16,3 +16,4 @@ alias l='ls $LS_OPTIONS -lA'
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+export PATH=$PATH:/var/www/.composer/vendor/bin
