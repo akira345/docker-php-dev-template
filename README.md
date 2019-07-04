@@ -1,12 +1,9 @@
 # docker-php-dev-template
-DockerでPHP7.2+MySQL8.0+PostgreSQL10環境で開発するテンプレートプロジェクトです。
+DockerでPHP7.3+MySQL8.0+PostgreSQL11環境で開発するテンプレートプロジェクトです。
 
 プロジェクトに応じてApacheのDocumentRootやマウントするディレクトリを変更してください。
 
 初期構成では、ララベルのインストーラも導入されます。
-
-不要であれば、./php/Dockerfileを編集してビルドしてください。
-
 
 ## プリインストールアプリケーション
 * adminer(/adminer)
